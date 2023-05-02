@@ -11,11 +11,10 @@ class TicketBaseTicket extends Model
 
     protected $table = 'ticket__base_tickets';
     protected $guarded = [];
+    public $timestamps = false;
+    protected $dates = ['created_at', 'expired_at', 'top_position_expired_at'];
 
-    public function airline()
-    {
-        return $this->belongsTo(DictionaryAirline::class, 'airline_code', 'code');
-    }
+
 
     public function departureAirport()
     {
@@ -38,10 +37,13 @@ class TicketBaseTicket extends Model
     }
 
     public function currency(){
-        return $this->hasOne(DictionaryCurrency::class,'currency_id','id');
+        return $this->hasOne(DictionaryCurrency::class,'id','currency_id');
     }
     public function ticketAirplaneTicket()
     {
-        return $this->belongsTo(TicketAirplaneTicket::class, 'id', 'id');
+        return $this->hasOne(TicketAirplaneTicket::class, 'id', 'id');
+    }
+    public function favorite(){
+        return $this->hasOne(TicketsFavoriteTicket::class,'ticket_id','id');
     }
 }

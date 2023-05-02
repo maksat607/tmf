@@ -4,8 +4,9 @@ namespace App\Filters;
 
 use App\Enums\TicketSortType;
 use App\Models\DictionaryAirport;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
+
 
 class TicketFilter
 {
@@ -50,6 +51,7 @@ class TicketFilter
 
     public function setFromStartDateAt(Carbon $fromStartDateAt = null)
     {
+
         $this->fromStartDateAt = $fromStartDateAt;
         return $this;
     }
@@ -104,7 +106,12 @@ class TicketFilter
 
     public function setSortType(string $sortType = null)
     {
-        $this->sortType = $sortType;
+        if ($sortType == 'top_position') {
+            $this->sortType = 'top_position_expired_at';
+        } else {
+            $this->sortType = $sortType;
+        }
+
         return $this;
     }
 
@@ -113,26 +120,40 @@ class TicketFilter
         $builder->skip($this->offset)->take($this->limit);
 
         if ($this->fromAirport) {
-            $builder->where('departure_airport_code', $this->fromAirport->code);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('from_airport_id', $this->fromAirport);
+            });
         }
         if ($this->toAirport) {
-            $builder->where('arrival_airport_code', $this->toAirport->code);
+            $builder->where('ticketAirplaneTicket', function ($query) {
+                $query->where('to_airport_id', $this->toAirport);
+            });
         }
         if ($this->fromStartDateAt) {
-            $builder->where('start_date', '>=', $this->fromStartDateAt);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('start_date_at', '>=', $this->fromStartDateAt);
+            });
         }
         if ($this->toStartDateAt) {
-            $builder->where('start_date', '<=', $this->toStartDateAt);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('end_date_at', '>=', $this->toStartDateAt);
+            });
         }
         if ($this->isOnlyWithReturnWay) {
-            $builder->whereNotNull('return_date');
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->whereNotNull('is_one_way');
+            });
         }
         if ($this->isOnlyWithoutReturnWay) {
-            $builder->whereNull('return_date');
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->whereNull('is_one_way');
+            });
         }
 
         if ($this->classType) {
-            $builder->where('class', $this->classType);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('class_type', $this->classType);
+            });
         }
 
 
@@ -142,12 +163,15 @@ class TicketFilter
             });
         }
 
-
         if ($this->childrenCount) {
-            $builder->where('children_count', $this->childrenCount);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('children_count', $this->childrenCount);
+            });
         }
         if ($this->infantsCount) {
-            $builder->where('infants_count', $this->infantsCount);
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                $query->where('infants_count', $this->infantsCount);
+            });
         }
 
         switch ($this->sortType) {
@@ -158,10 +182,14 @@ class TicketFilter
                 $builder->orderBy('price', 'desc');
                 break;
             case TicketSortType::DATE_ASC:
-                $builder->orderBy('start_date', 'asc');
+                $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                    $query->orderBy('start_date_at', 'asc');
+                });
                 break;
             case TicketSortType::DATE_DESC:
-                $builder->orderBy('start_date', 'desc');
+                $builder->whereHas('ticketAirplaneTicket', function ($query) {
+                    $query->orderBy('start_date_at', 'desc');
+                });
                 break;
             default:
                 $builder->orderBy('price', 'asc');

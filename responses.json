@@ -1,0 +1,70 @@
+[
+    {
+        "full_url": "http:\/\/api.takemyflight.app\/tickets?limit=200&sortType=top_position&offset=0&toStartDateAt=2023-05-05T17:59:59Z&fromStartDateAt=2023-04-27T18:00:00Z",
+        "params": {
+            "limit": "200",
+            "sortType": "top_position",
+            "offset": "0",
+            "toStartDateAt": "2023-05-05T17:59:59Z",
+            "fromStartDateAt": "2023-04-27T18:00:00Z"
+        },
+        "content": "",
+        "headers": {
+            "Cdn-Loop": "cloudflare",
+            "Cf-Ipcountry": "KG",
+            "Cf-Connecting-Ip": "158.181.247.119",
+            "Accept-Language": "ru-KG;q=1.0, en-KG;q=0.9",
+            "User-Agent": "TakeMyFlight\/1.3.1 (au.com.makemeapp.takemyflight; build:1.3.2; iOS 12.5.7) Alamofire\/5.2.2",
+            "X-Access-Token": "1852644b6d80c8a6fe8c9fa478b8bf8f80cdd49a22268a964",
+            "Accept": "*\/*",
+            "Cf-Visitor": "{\"scheme\":\"https\"}",
+            "X-Forwarded-Proto": "https",
+            "Cf-Ray": "7bee69784dabc240-VIE",
+            "X-Forwarded-For": "158.181.247.119",
+            "Accept-Encoding": "gzip",
+            "Connection": "Keep-Alive",
+            "Host": "api.takemyflight.app",
+            "Content-Length": "",
+            "Content-Type": ""
+        }
+    },
+    {
+        "full_url": "http:\/\/api.takemyflight.app\/tickets\/favorites?offset=0&limit=200",
+        "params": {
+            "offset": "0",
+            "limit": "200"
+        },
+        "content": "",
+        "headers": {
+            "Cdn-Loop": "cloudflare",
+            "Cf-Ipcountry": "KG",
+            "Cf-Connecting-Ip": "158.181.247.119",
+            "Accept-Language": "ru-KG;q=1.0, en-KG;q=0.9",
+            "User-Agent": "TakeMyFlight\/1.3.1 (au.com.makemeapp.takemyflight; build:1.3.2; iOS 12.5.7) Alamofire\/5.2.2",
+            "X-Access-Token": "1852644b6d80c8a6fe8c9fa478b8bf8f80cdd49a22268a964",
+            "Accept": "*\/*",
+            "Cf-Visitor": "{\"scheme\":\"https\"}",
+            "X-Forwarded-Proto": "https",
+            "Cf-Ray": "7bee69784dacc240-VIE",
+            "X-Forwarded-For": "158.181.247.119",
+            "Accept-Encoding": "gzip",
+            "Connection": "Keep-Alive",
+            "Host": "api.takemyflight.app",
+            "Content-Length": "",
+            "Content-Type": ""
+        }
+    },
+    {
+        "full_url": "http:\/\/api.takemyflight.app\/chats\/my?offset=0&limit=200",
+        "params": {
+            "offset": "0",
+            "limit": "200"
+        },
+        "content": "",
+        "headers": {
+            "Cdn-Loop": "cloudflare",
+            "Cf-Ipcountry": "KG",
+            "Cf-Connecting-Ip": "158.181.247.119",
+            "Accept-Language": "ru-KG;q=1.0, en-KG;q=0.9",
+            "User-Agent": "TakeMyFlight\/1.3.1 (au.com.makemeapp.takemyflight; build:1.3.2; iOS 12.5.7) Alamofire\/5.2.2",
+            "X-Access-Token": "1852644b6d

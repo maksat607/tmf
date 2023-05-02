@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 
@@ -51,5 +52,5 @@ $kernel = $app->make(Kernel::class);
 $response = $kernel->handle(
     $request = Request::capture()
 )->send();
-
+//new \App\Services\ApiRequestHandler();
 $kernel->terminate($request, $response);

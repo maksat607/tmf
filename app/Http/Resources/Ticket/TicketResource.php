@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources\Ticket;
 
+use App\Http\Resources\Airline\AirlineResource;
 use App\Http\Resources\Airport\AirportResource;
 use App\Http\Resources\Auth\AuthUserResource;
+use App\Http\Resources\Currency\CurrencyResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -16,7 +18,6 @@ class TicketResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-//        return parent::toArray($request);
         return [
             "id" => $this->id,
             "type" => "airplane",
@@ -32,9 +33,9 @@ class TicketResource extends JsonResource
             "previousPrice" => $this->previous_price,
             "discountType" => $this->discount_type,
             "currency" => $this->whenLoaded('currency', function () {
-                return $this->currency;
+                return new CurrencyResource($this->currency);
             }),
-            "fromAirport" =>new AirportResource($this->whenLoaded('ticketAirplaneTicket',function (){
+            "fromAirport" => new AirportResource($this->whenLoaded('ticketAirplaneTicket', function () {
                 return $this->ticketAirplaneTicket->fromAirport;
             })),
             "toAirport" => new AirportResource($this->whenLoaded('ticketAirplaneTicket', function () {
@@ -46,7 +47,10 @@ class TicketResource extends JsonResource
             "returnToAirport" => new AirportResource($this->whenLoaded('ticketAirplaneTicket', function () {
                 return $this->ticketAirplaneTicket->returnToAirport;
             })),
-            "isOneWay" => $this->ticketAirplaneTicket->is_one_way,
+            "airline" => $this->whenLoaded('ticketAirplaneTicket', function () {
+                return new AirlineResource($this->ticketAirplaneTicket->airline);
+            }),
+            "isOneWay" => (boolean) $this->ticketAirplaneTicket->is_one_way,
             "startDateAt" => $this->ticketAirplaneTicket->start_date_at,
             "endDateAt" => $this->ticketAirplaneTicket->end_date_at,
             "returnStartDateAt" => $this->ticketAirplaneTicket->return_start_date_at,
@@ -57,12 +61,14 @@ class TicketResource extends JsonResource
             "adultsCount" => $this->ticketAirplaneTicket->adults_count,
             "childrenCount" => $this->ticketAirplaneTicket->children_count,
             "infantsCount" => $this->ticketAirplaneTicket->infants_count,
-            "airline" => $this->airline,
-            "isSold" => $this->is_sold,
+            "isSold" => (boolean)$this->is_sold,
             "topPositionExpiredAt" => $this->top_position_expired_at,
-            "isHighlighted" => $this->is_highlighted,
+            "isHighlighted" =>(boolean) $this->is_highlighted,
             "__typename" => "Ticket_AirplaneTicket",
-            "purchase" => $this->purchases
+            "purchase" => $this->whenLoaded('purchases', function () {
+                return $this->purchases;
+            }),
+
 
         ];
     }

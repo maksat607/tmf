@@ -10,8 +10,17 @@ class TicketAirplaneTicket extends Model
     use HasFactory;
     protected $table = 'ticket__airplane_tickets';
     protected $guarded = [];
-    public function airline() {
-        return $this->belongsTo(DictionaryAirline::class);
+    protected $dates = [
+        'start_date_at',
+        'end_date_at',
+        'return_start_date_at',
+        'return_end_date_at',
+    ];
+    public $timestamps = false;
+
+    public function airline()
+    {
+        return $this->belongsTo(DictionaryAirline::class, 'airline_id', 'id');
     }
     public function fromAirport()
     {
@@ -34,4 +43,9 @@ class TicketAirplaneTicket extends Model
     public function purchases(){
         return $this->belongsTo(TicketBaseTicket::class,'ticket_id','id');
     }
+
+    public function ticketBaseTicket(){
+        return $this->belongsTo(TicketBaseTicket::class,'id','id');
+    }
+
 }
