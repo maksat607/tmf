@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers\Ticket;
 
-use App\Enums\TicketSortType;
-use App\Filters\TicketFilter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\StoreTicket;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\TicketAirplaneTicket;
 use App\Models\TicketBaseTicket;
-use App\Services\ApiRequestHandler;
 use App\Services\TicketFilterService;
 use Carbon\Carbon;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -30,7 +28,7 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        $items = $this->ticketFilterService->getFilteredTickets( $request);
+        $items = $this->ticketFilterService->getFilteredTickets($request);
         $count = $items->count();
         return response()->json(TicketResource::collection($items))->header('X-Total-Count', $count);
     }
@@ -112,8 +110,7 @@ class TicketController extends Controller
         if ($user->id !== $baseTicket->user_id) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
-        return new TicketResource($baseTicket->load(['user', 'airline',
+        return new TicketResource($baseTicket->load(['user', 'ticketAirplaneTicket.airline',
             'departureAirport',
             'arrivalAirport',
             'ticketAirplaneTicket.fromAirport',
@@ -225,6 +222,36 @@ class TicketController extends Controller
         $baseTicket->top_position_expired_at = Carbon::now();
         $baseTicket->save();
         return new TicketResource($baseTicket);
+    }
+
+    public function mylist(Request $request)
+    {
+        $tickets = auth()->user()->tickets()->with(['user',
+            'departureAirport',
+            'arrivalAirport',
+            'currency',
+//                'purchases',
+            'ticketAirplaneTicket.fromAirport',
+            'ticketAirplaneTicket.toAirport',
+            'ticketAirplaneTicket.returnFromAirport',
+            'ticketAirplaneTicket.returnToAirport',
+            'ticketAirplaneTicket.airline'
+        ])->get();
+        return TicketResource::collection(
+            $tickets
+        );
+
+    }
+
+    public function sold(Request $request,TicketBaseTicket $ticket)
+    {
+        $user = auth()->user();
+        if ($user->id !== $ticket->user_id) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $ticket->is_sold = 1;
+        $ticket->save();
+        return response()->noContent();
     }
 
 }

@@ -15,10 +15,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
 
-    $request_uri = $_SERVER['REQUEST_URI'];
-    $host = $_SERVER['HTTP_HOST'];
-    $scheme = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-    $full_url = $scheme . '://' . $host . $request_uri;
-    $headers = getallheaders();
-    dd(!isset($headers['Cf-Ipcountry']));
+
 });

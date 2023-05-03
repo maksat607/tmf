@@ -12,6 +12,8 @@ class LoginController extends Controller
         try {
             $verifier = IdTokenVerifier::createWithProjectId($this->getAuthManager()->getFirebaseProjectId());
             $token = $verifier->verifyIdToken($requestModel->getIdToken());
+
+
         } catch (IdTokenVerificationFailed $exception) {
             throw new Common\Exception\ValidationFieldException('all','Invalid token');
         }

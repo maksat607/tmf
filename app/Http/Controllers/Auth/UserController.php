@@ -72,9 +72,11 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy()
     {
-        //
+//        return auth()->user()->accessTokens;
+        auth()->user()->accessTokens()->delete();
+        return response()->noContent();
     }
 
     public function loginByFirebase(Request $request)
