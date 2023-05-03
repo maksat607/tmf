@@ -10,6 +10,7 @@ class TicketsFavoriteTicket extends Model
     use HasFactory;
     protected $guarded = [];
     protected $table = 'tickets__favorite_tickets';
+    public $timestamps = false;
     public function user()
     {
         return $this->belongsTo(User::class);
