@@ -40,10 +40,16 @@ class FavoriteTicketController extends Controller
      */
     public function store(Request $request, TicketBaseTicket $ticket)
     {
-        $favoriteTicket = new TicketsFavoriteTicket();
-        $favoriteTicket->ticket_id = $ticket->id;
-        $favoriteTicket->user_id = auth()->id();
-        $favoriteTicket->save();
+        if (auth()->id() !== $ticket->user_id) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        if (!$ticket->favorite){
+            $favoriteTicket = new TicketsFavoriteTicket();
+            $favoriteTicket->ticket_id = $ticket->id;
+            $favoriteTicket->user_id = auth()->id();
+            $favoriteTicket->save();
+        }
+
         return new TicketResource($ticket);
     }
 
