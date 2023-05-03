@@ -40,9 +40,9 @@ class FavoriteTicketController extends Controller
      */
     public function store(Request $request, TicketBaseTicket $ticket)
     {
-        if (auth()->id() !== $ticket->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+//        if (auth()->id() !== $ticket->user_id) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
         if (!$ticket->favorite){
             $favoriteTicket = new TicketsFavoriteTicket();
             $favoriteTicket->ticket_id = $ticket->id;
@@ -58,9 +58,9 @@ class FavoriteTicketController extends Controller
      */
     public function show(TicketBaseTicket $ticket)
     {
-        if (auth()->id() !== $ticket->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+//        if (auth()->id() !== $ticket->user_id) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
         $containsTicketId = auth()->user()?->favoriteTickets->contains(function ($favoriteTicket) use ($ticket) {
             return $favoriteTicket->ticket_id == $ticket->id;
         });
