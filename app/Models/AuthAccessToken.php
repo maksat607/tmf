@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,8 +12,9 @@ class AuthAccessToken extends Model
     protected $table = 'auth__access_tokens';
     protected $guarded = [];
     protected $casts = [
-        'expires_at' => 'datetime',
+        'expired_at' => 'datetime',
     ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
 
     public function user()
     {

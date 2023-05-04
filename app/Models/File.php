@@ -10,7 +10,10 @@ class File extends Model
     use HasFactory;
     protected $table = 'files';
     protected $guarded = [];
-
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
     public function user()
     {
         return $this->belongsTo(AuthUser::class);

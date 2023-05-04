@@ -14,6 +14,12 @@ class AuthUser extends Model implements AuthenticatableContract
     protected $table = 'auth__users';
 
     protected $guarded = [];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'payment_intent_created_at' => 'datetime',
+        'email_verification_requested_at' => 'datetime'
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
 
     protected $hidden = [
         'password',

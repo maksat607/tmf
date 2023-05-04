@@ -11,7 +11,16 @@ class TicketsMatchAlertRule extends Model
     protected $table = 'tickets__match_alert_rules';
     protected $guarded = [];
     public $timestamps = false;
-
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'expired_at' => 'datetime',
+        'start_date_at' => 'datetime',
+        'end_date_at' => 'datetime',
+        'return_start_date_at' => 'datetime',
+        'return_end_date_at' => 'datetime',
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
 
     public function user()
     {

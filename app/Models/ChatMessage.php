@@ -13,6 +13,10 @@ class ChatMessage extends Model
     /**
      * Get the chat that this message belongs to.
      */
+    protected $casts = [
+        'created_at' => 'datetime'
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
     public function chat()
     {
         return $this->belongsTo(Chat::class);

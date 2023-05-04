@@ -10,12 +10,13 @@ class TicketAirplaneTicket extends Model
     use HasFactory;
     protected $table = 'ticket__airplane_tickets';
     protected $guarded = [];
-    protected $dates = [
-        'start_date_at',
-        'end_date_at',
-        'return_start_date_at',
-        'return_end_date_at',
-    ];
+    protected $casts = [
+        'start_date_at' => 'datetime',
+        'end_date_at' => 'datetime',
+        'return_start_date_at' => 'datetime',
+        'return_end_date_at' => 'datetime'
+        ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
     public $timestamps = false;
 
     public function airline()

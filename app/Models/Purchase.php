@@ -10,6 +10,12 @@ class Purchase extends Model
     use HasFactory;
     protected $table = 'purchases';
     protected $guarded = [];
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'declined_at' => 'datetime'
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
     public function user() {
         return $this->belongsTo(AuthUser::class);
     }

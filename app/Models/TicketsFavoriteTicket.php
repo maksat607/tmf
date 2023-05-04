@@ -11,6 +11,10 @@ class TicketsFavoriteTicket extends Model
     protected $guarded = [];
     protected $table = 'tickets__favorite_tickets';
     public $timestamps = false;
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
+    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
     public function user()
     {
         return $this->belongsTo(User::class);
