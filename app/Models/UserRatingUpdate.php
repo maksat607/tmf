@@ -14,7 +14,7 @@ class UserRatingUpdate extends Model
         'created_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
     protected $fillable = [
         'destination_id',
         'author_id',

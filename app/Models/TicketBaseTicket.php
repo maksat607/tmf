@@ -18,7 +18,7 @@ class TicketBaseTicket extends Model
         'expired_at' => 'datetime',
         'top_position_expired_at' => 'datetime',
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
 
 
     public function departureAirport()

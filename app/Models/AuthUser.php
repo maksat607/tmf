@@ -19,7 +19,7 @@ class AuthUser extends Model implements AuthenticatableContract
         'payment_intent_created_at' => 'datetime',
         'email_verification_requested_at' => 'datetime'
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
 
     protected $hidden = [
         'password',

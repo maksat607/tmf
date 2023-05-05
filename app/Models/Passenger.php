@@ -13,7 +13,7 @@ class Passenger extends Model
     protected $dates = [
         'deleted_at'
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
     public function purchases() {
         return $this->hasMany(PurchasePassenger::class);
     }

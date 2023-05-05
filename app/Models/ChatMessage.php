@@ -16,7 +16,7 @@ class ChatMessage extends Model
     protected $casts = [
         'created_at' => 'datetime'
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
     public function chat()
     {
         return $this->belongsTo(Chat::class);

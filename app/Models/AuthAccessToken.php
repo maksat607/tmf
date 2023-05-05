@@ -14,7 +14,7 @@ class AuthAccessToken extends Model
     protected $casts = [
         'expired_at' => 'datetime',
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
 
     public function user()
     {

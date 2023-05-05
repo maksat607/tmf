@@ -15,7 +15,7 @@ class Purchase extends Model
         'updated_at' => 'datetime',
         'declined_at' => 'datetime'
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
     public function user() {
         return $this->belongsTo(AuthUser::class);
     }

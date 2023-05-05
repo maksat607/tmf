@@ -14,7 +14,7 @@ class ChatChat extends Model
         'created_at' => 'datetime',
         'last_update_at' => 'datetime'
     ];
-    protected $dateFormat = 'Y-m-d\TH:i:s.u\Z';
+    protected $dateFormat = 'c';
     public function messages()
     {
         return $this->hasMany(ChatMessage::class, 'chat_id');
