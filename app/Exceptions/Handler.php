@@ -54,6 +54,7 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Record_not_found.'], 404);
         }
 
+        return response()->json(['error' => $e->getMessage()], 500);
         return parent::render($request, $e);
     }
 
