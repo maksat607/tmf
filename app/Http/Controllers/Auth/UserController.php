@@ -110,9 +110,11 @@ class UserController extends Controller
 //            'expired_at'=>  Carbon::now()->addYear(),
 //            'token'=>$token
 //        ]);
+//        $firebase_identifier = 'FSl8UZXH7hMe1sFQjUnVbzeq4Zl2';
         $existingUser = AuthUser::where('firebase_identifier', $firebase_identifier)->first();
 
-        if (!$existingUser) {
+        $accessToken = $existingUser->accessTokens()->where('expired_at', '>', Carbon::now())->first();
+        if (!$accessToken) {
             $user = AuthUser::create([
                 'firebase_identifier' => $firebase_identifier,
                 'increases_count' => 0,
@@ -127,7 +129,7 @@ class UserController extends Controller
             ]);
         } else {
             $user = $existingUser;
-            $authAccessToken = $user->accessTokens;
+            $authAccessToken = $accessToken;
         }
         return [
             "user" => new AuthUserResource($user->load('photo')),
