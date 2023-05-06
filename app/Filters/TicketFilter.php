@@ -52,13 +52,13 @@ class TicketFilter
     public function setFromStartDateAt(Carbon $fromStartDateAt = null)
     {
 
-        $this->fromStartDateAt = $fromStartDateAt;
+        $this->fromStartDateAt = Carbon::parse($fromStartDateAt);
         return $this;
     }
 
     public function setToStartDateAt(Carbon $toStartDateAt = null)
     {
-        $this->toStartDateAt = $toStartDateAt;
+        $this->toStartDateAt = Carbon::parse($toStartDateAt);
         return $this;
     }
 
@@ -121,233 +121,37 @@ class TicketFilter
         $builder->skip($this->offset)->take($this->limit);
 
         if ($this->fromAirport) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('fromAirport')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('from_airport_id', $this->fromAirport);
             });
         }
         if ($this->toAirport) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('toAirport')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->where('ticketAirplaneTicket', function ($query) {
                 $query->where('to_airport_id', $this->toAirport);
             });
         }
         if ($this->fromStartDateAt) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('fromStartDateAt')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('start_date_at', '>=', $this->fromStartDateAt);
             });
         }
         if ($this->toStartDateAt) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('toStartDateAt')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('end_date_at', '>=', $this->toStartDateAt);
             });
         }
         if ($this->isOnlyWithReturnWay) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('isOnlyWithReturnWay')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->whereNotNull('is_one_way');
             });
         }
         if ($this->isOnlyWithoutReturnWay) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('isOnlyWithoutReturnWay')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->whereNull('is_one_way');
             });
         }
 
         if ($this->classType) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('isOnlyWithoutReturnWay')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('class_type', $this->classType);
             });
@@ -355,34 +159,6 @@ class TicketFilter
 
 
         if ($this->adultsCount) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('adultsCount')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('adults_count', $this->adultsCount);
             });
@@ -394,34 +170,6 @@ class TicketFilter
             });
         }
         if ($this->infantsCount) {
-            $data = array(
-                'companycode' => 'coeeac36b530817',
-                'data' => array(
-                    array(
-                        'message' => json_encode('infantsCount')
-                    )
-                )
-            );
-
-
-            $json_data = json_encode($data);
-
-// Set up cURL to make the HTTP request
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL => 'https://t.kuleshov.studio/api/getmessages',
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_POSTFIELDS => $json_data,
-                CURLOPT_HTTPHEADER => array(
-                    'Content-Type: application/json'
-                ),
-                CURLOPT_TIMEOUT => 1,
-                CURLOPT_CONNECTTIMEOUT => 1,
-            ));
-
-// Fire off the HTTP request and immediately close the cURL handle
-            curl_exec($curl);
-            curl_close($curl);
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('infants_count', $this->infantsCount);
             });
