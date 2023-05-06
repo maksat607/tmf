@@ -49,14 +49,14 @@ class TicketFilter
         return $this;
     }
 
-    public function setFromStartDateAt(Carbon $fromStartDateAt = null)
+    public function setFromStartDateAt( $fromStartDateAt )
     {
 
         $this->fromStartDateAt = Carbon::parse($fromStartDateAt);
         return $this;
     }
 
-    public function setToStartDateAt(Carbon $toStartDateAt = null)
+    public function setToStartDateAt( $toStartDateAt )
     {
         $this->toStartDateAt = Carbon::parse($toStartDateAt);
         return $this;
