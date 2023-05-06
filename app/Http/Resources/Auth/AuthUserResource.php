@@ -23,9 +23,6 @@ class AuthUserResource extends JsonResource
             "photo" => new UserAuthPhotoResource($this->whenLoaded('photo', function () {
                 return $this->photo;
             })),
-            "accessToken" => new AccessTokenResource($this->whenLoaded('accessTokens', function () {
-                return ($this->accessTokens()->orderBy('created_at','desc')->first());
-            })),
             "increasesCount" => $this->increases_count,
             "decreasesCount" => $this->decreases_count,
             "email" => $this->email,

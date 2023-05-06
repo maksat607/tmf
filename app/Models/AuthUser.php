@@ -47,7 +47,7 @@ class AuthUser extends Model implements AuthenticatableContract
     }
     public function accessTokens()
     {
-        return $this->hasMany(AuthAccessToken::class, 'user_id', 'id');
+        return $this->hasOne(AuthAccessToken::class, 'user_id', 'id');
     }
 
     public function photo()

@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreAuthUser;
+use App\Http\Resources\Auth\AccessTokenResource;
 use App\Http\Resources\Auth\AuthUserResource;
 use App\Models\AuthAccessToken;
 use App\Models\AuthUser;
@@ -23,7 +25,7 @@ class UserController extends Controller
 
         $accessToken = $request->header('X-Access-Token');
         $user = AuthAccessToken::where('token', $accessToken)->first()?->user;
-        return new AuthUserResource($user->loadMissing(['photo','accessTokens']));
+        return new AuthUserResource($user->loadMissing(['photo', 'accessTokens']));
     }
 
     /**
@@ -95,19 +97,43 @@ class UserController extends Controller
         }
 
         $firebase_identifier = $token->payload()['user_id'];
-        $user = AuthUser::create([
-            'firebase_identifier' => $firebase_identifier,
-            'increases_count' => 0,
-            'decreases_count' => 0,
-        ]);
 
-        $token = sprintf('%d%s', $user->id, uniqid() . bin2hex(openssl_random_pseudo_bytes(16)));
+//        $user = AuthUser::create([
+//            'firebase_identifier' => $firebase_identifier,
+//            'increases_count' => 0,
+//            'decreases_count' => 0,
+//        ]);
+//
+//        $token = sprintf('%d%s', $user->id, uniqid() . bin2hex(openssl_random_pseudo_bytes(16)));
+//
+//        $authAccessToken = $user->accessTokens()->create([
+//            'expired_at'=>  Carbon::now()->addYear(),
+//            'token'=>$token
+//        ]);
+        $existingUser = AuthUser::where('firebase_identifier', $firebase_identifier)->first();
 
-        $authAccessToken = $user->accessTokens()->create([
-            'expired_at'=>  Carbon::now()->addYear(),
-            'token'=>$token
-        ]);
-        return new AuthUserResource($user->load(['photo','accessTokens']));
+        if (!$existingUser) {
+            $user = AuthUser::create([
+                'firebase_identifier' => $firebase_identifier,
+                'increases_count' => 0,
+                'decreases_count' => 0,
+            ]);
+
+            $token = sprintf('%d%s', $user->id, uniqid() . bin2hex(openssl_random_pseudo_bytes(16)));
+
+            $authAccessToken = $user->accessTokens()->create([
+                'expired_at' => Carbon::now()->addYear(),
+                'token' => $token
+            ]);
+        } else {
+            $user = $existingUser;
+            $authAccessToken = $user->accessTokens;
+        }
+        return [
+            "user" => new AuthUserResource($user->load('photo')),
+            "accessToken" => new AccessTokenResource($authAccessToken),
+            "__typename" => "Auth_UserWithToken"
+        ];
     }
 
 

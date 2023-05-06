@@ -30,7 +30,7 @@ class TicketFilterService
             ->setAdultsCount($request->get('adultsCount'))
             ->setChildrenCount($request->get('childrenCount'))
             ->setInfantsCount($request->get('infantsCount'))
-            ->setWatcher($request->user())
+//            ->setWatcher($request->user())
             ->setSortType($request->get('sort_type') ?: TicketSortType::TOP_POSITION)
             ->apply(TicketBaseTicket::with(['user',
                 'departureAirport',

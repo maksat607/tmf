@@ -17,7 +17,7 @@ class AccessTokenResource extends JsonResource
         return [
             "token"=>  $this->token,
             "expiredAt"=> $this->expired_at?->toIso8601String(),
-            "__typename"=> "Access_Token"
+            "__typename"=> "Auth_AccessToken"
         ];
     }
 }
