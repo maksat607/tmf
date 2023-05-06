@@ -128,7 +128,7 @@ class TicketFilter
             });
         }
         if ($this->toAirport) {
-            $builder->where('ticketAirplaneTicket', function ($query) {
+            $builder->whereHas('ticketAirplaneTicket', function ($query) {
                 $query->where('to_airport_id', $this->toAirport);
             });
         }
