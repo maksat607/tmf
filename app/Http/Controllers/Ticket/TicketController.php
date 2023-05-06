@@ -108,9 +108,9 @@ class TicketController extends Controller
     {
         $baseTicket = TicketBaseTicket::findOrFail($id);
         $user = auth()->user();
-        if ($user->id !== $baseTicket->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+//        if ($user->id !== $baseTicket->user_id) {
+//            return response()->json(['error' => 'Unauthorized'], 401);
+//        }
         return new TicketResource($baseTicket->load(['user', 'ticketAirplaneTicket.airline',
             'departureAirport',
             'arrivalAirport',
@@ -134,7 +134,7 @@ class TicketController extends Controller
 
             // Check if the authenticated user is the owner of the ticket
             if ($user->id !== $baseTicket->user_id) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'Forbidden'], 403);
             }
 
             $ticketData = [
@@ -200,7 +200,7 @@ class TicketController extends Controller
         try {
             $baseTicket = TicketBaseTicket::findOrFail($id);
             if ($user->id !== $baseTicket->user_id) {
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'Forbidden'], 403);
             }
             $airplaneTicket = $baseTicket->ticketAirplaneTicket;
             $airplaneTicket->delete();
@@ -218,7 +218,7 @@ class TicketController extends Controller
         $user = auth()->user();
         $baseTicket = TicketBaseTicket::findOrFail($id);
         if ($user->id !== $baseTicket->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Forbidden'], 403);
         }
         $baseTicket->top_position_expired_at = Carbon::now();
         $baseTicket->save();
@@ -248,7 +248,7 @@ class TicketController extends Controller
     {
         $user = auth()->user();
         if ($user->id !== $ticket->user_id) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Forbidden'], 403);
         }
         $ticket->is_sold = 1;
         $ticket->save();
