@@ -202,8 +202,10 @@ class TicketFilter
         if ($this->watcher) {
             $builder->where('watcher_id', $this->watcher->id);
         }
-
-        return $builder->where('start_date_at','<',now());
+        $builder->whereHas('ticketAirplaneTicket', function ($query) {
+            $query->where('start_date_at','<',now());
+        });
+        return $builder;
     }
 
 //    public function filter(Builder $builder)
