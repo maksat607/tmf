@@ -37,13 +37,13 @@ class TicketFilter
         return $this;
     }
 
-    public function setFromAirport(DictionaryAirport $fromAirport = null)
+    public function setFromAirport( $fromAirport )
     {
         $this->fromAirport = $fromAirport;
         return $this;
     }
 
-    public function setToAirport(DictionaryAirport $toAirport = null)
+    public function setToAirport( $toAirport )
     {
         $this->toAirport = $toAirport;
         return $this;
@@ -54,7 +54,6 @@ class TicketFilter
         if ($fromStartDateAt){
             $this->fromStartDateAt = Carbon::parse($fromStartDateAt);
         }
-
         return $this;
     }
 
@@ -121,7 +120,6 @@ class TicketFilter
 
     public function apply(Builder $builder)
     {
-
         $builder->skip($this->offset)->take($this->limit);
 
         if ($this->fromAirport) {
@@ -205,7 +203,7 @@ class TicketFilter
             $builder->where('watcher_id', $this->watcher->id);
         }
 
-        return $builder;
+        return $builder->where('start_date_at','<',now());
     }
 
 //    public function filter(Builder $builder)
