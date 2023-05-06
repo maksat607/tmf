@@ -97,7 +97,14 @@ class TicketController extends Controller
             throw $e;
         }
 
-        return new TicketResource($baseTicket);
+        return new TicketResource($baseTicket->load(['user', 'ticketAirplaneTicket.airline',
+            'departureAirport',
+            'arrivalAirport',
+            'ticketAirplaneTicket.fromAirport',
+            'ticketAirplaneTicket.toAirport',
+            'ticketAirplaneTicket.returnFromAirport',
+            'ticketAirplaneTicket.returnToAirport'
+        ]));
     }
 
 
