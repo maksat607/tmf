@@ -208,44 +208,5 @@ class TicketFilter
         return $builder;
     }
 
-//    public function filter(Builder $builder)
-//    {
-//        $builder->when($this->fromAirport, function ($query, $fromAirport) {
-//            return $query->where('from_airport', $fromAirport);
-//        })
-//            ->when($this->toAirport, function ($query, $toAirport) {
-//                return $query->where('to_airport', $toAirport);
-//            })
-//            ->when($this->fromStartDateAt, function ($query, $fromStartDateAt) {
-//                return $query->where('start_date', '>=', $fromStartDateAt);
-//            })
-//            ->when($this->toStartDateAt, function ($query, $toStartDateAt) {
-//                return $query->where('start_date', '<=', $toStartDateAt);
-//            })
-//            ->when($this->isOnlyWithReturnWay, function ($query) {
-//                return $query->where('has_return_way', true);
-//            })
-//            ->when($this->isOnlyWithoutReturnWay, function ($query) {
-//                return $query->where('has_return_way', false);
-//            })
-//            ->when($this->classType, function ($query, $classType) {
-//                return $query->where('class_type', $classType);
-//            })
-//            ->when($this->adultsCount, function ($query, $adultsCount) {
-//                return $query->where('adults_count', $adultsCount);
-//            })
-//            ->when($this->childrenCount, function ($query, $childrenCount) {
-//                return $query->where('children_count', $childrenCount);
-//            })
-//            ->when($this->infantsCount, function ($query, $infantsCount) {
-//                return $query->where('infants_count', $infantsCount);
-//            })
-//            ->when($this->watcher, function ($query, $watcher) {
-//                return $query->where('user_id', $watcher->id);
-//            })
-//            ->orderBy($this->sortType);
-//
-//        return $builder;
-//    }
 }
 
