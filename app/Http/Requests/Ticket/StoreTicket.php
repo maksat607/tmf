@@ -6,6 +6,24 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreTicket extends FormRequest
 {
+    public function all($keys = null)
+    {
+        $data = parent::all($keys);
+        if(isset($data['discountType'])&&$data['discountType']=='usual'){
+            $data['topPositionExpiredAt'] = now();
+        }
+        if(isset($data['discountType'])&&$data['discountType']=='urgent'){
+            $data['topPositionExpiredAt'] = now()->addDays(3);
+        }
+        if(isset($data['discountType'])&&$data['discountType']=='promo'){
+            $data['topPositionExpiredAt'] = now()->addDays(7);
+        }
+        if(isset($data['discountType'])&&$data['discountType']=='discount'){
+            $data['topPositionExpiredAt'] = now();
+        }
+        return $data;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -22,28 +40,28 @@ class StoreTicket extends FormRequest
     public function rules(): array
     {
         return [
-            'fromAirport' => 'required|integer',
-            'toAirport' => 'required|integer',
+            'fromAirport' => 'sometimes|integer',
+            'toAirport' => 'sometimes|integer',
             'returnFromAirport' => 'sometimes|integer',
             'returnToAirport' => 'sometimes|integer',
-            'isOneWay' => 'required|boolean',
+            'isOneWay' => 'sometimes|boolean',
             'startDateAt' => 'sometimes|date_format:Y-m-d\TH:i:s\Z',
             'endDateAt' => 'sometimes|date_format:Y-m-d\TH:i:s\Z',
             'returnStartDateAt' => 'sometimes|date_format:Y-m-d\TH:i:s\Z',
             'returnEndDateAt' => 'sometimes|date_format:Y-m-d\TH:i:s\Z',
-            'stopsCount' => 'required|integer',
+            'stopsCount' => 'sometimes|integer',
             'returnStopsCount' => 'sometimes|integer',
-            'classType' => 'required|in:economy,business,first',
-            'adultsCount' => 'required|integer|min:1',
+            'classType' => 'sometimes|in:economy,business,first',
+            'adultsCount' => 'sometimes|integer|min:1',
             'childrenCount' => 'sometimes|integer|min:0',
             'infantsCount' => 'sometimes|integer|min:0',
-            'airline' => 'required|integer',
+            'airline' => 'sometimes|integer',
             'locationLatitude' => 'sometimes|numeric',
             'locationLongitude' => 'sometimes|numeric',
             'locationName' => 'sometimes|string|max:255',
-            'price' => 'required|integer|min:0',
+            'price' => 'sometimes|integer|min:0',
             'previousPrice' => 'sometimes|integer|min:0',
-//            'discountType' => 'sometimes|in:usual,flash_sale,group',
+            'discountType' => 'sometimes|in:usual,promo,discounted,urgent',
             'currency' => 'sometimes|integer',
             'isHighlighted' => 'sometimes|boolean',
         ];
