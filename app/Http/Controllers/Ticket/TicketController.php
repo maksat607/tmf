@@ -21,7 +21,7 @@ class TicketController extends Controller
 
     public function __construct(public TicketFilterService $ticketFilterService)
     {
-        $this->middleware('auth.access_token')->only(['store', 'update', 'show','upTopPosition']);
+        $this->middleware('auth.access_token')->only(['store', 'update', 'show','upTopPosition','sold','destroy']);
         $this->ticketService = new TicketService();
     }
 
