@@ -29,7 +29,7 @@ class TicketResource extends JsonResource
             "locationLatitude" => $this->location_latitude,
             "locationLongitude" => $this->location_longitude,
             "locationName" => $this->location_name,
-            "price" => $this->price,
+            "price" => (int)$this->price,
             "previousPrice" => $this->previous_price,
             "discountType" => $this->discount_type,
             "currency" => $this->whenLoaded('currency', function () {
