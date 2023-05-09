@@ -167,6 +167,18 @@ class TicketService
         return $this->fullTicketInfo($baseTicket);
     }
 
+    public function upTopPosition(string $id)
+    {
+        $user = auth()->user();
+        $baseTicket = TicketBaseTicket::findOrFail($id);
+//        if ($user->id !== $baseTicket->user_id) {
+//            return response()->json(['error' => 'Forbidden'], 403);
+//        }
+        $baseTicket->top_position_expired_at = Carbon::now();
+        $baseTicket->save();
+        return $this->fullTicketInfo($baseTicket);
+    }
+
     public function destroy(string $id)
     {
         $user = auth()->user();

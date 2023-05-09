@@ -82,21 +82,8 @@ class TicketController extends Controller
 
     public function upTopPosition(string $id)
     {
-        $user = auth()->user();
-        $baseTicket = TicketBaseTicket::findOrFail($id);
-//        if ($user->id !== $baseTicket->user_id) {
-//            return response()->json(['error' => 'Forbidden'], 403);
-//        }
-        $baseTicket->top_position_expired_at = Carbon::now();
-        $baseTicket->save();
-        return new TicketResource($baseTicket->load(['user', 'ticketAirplaneTicket.airline',
-            'departureAirport',
-            'arrivalAirport',
-            'ticketAirplaneTicket.fromAirport',
-            'ticketAirplaneTicket.toAirport',
-            'ticketAirplaneTicket.returnFromAirport',
-            'ticketAirplaneTicket.returnToAirport'
-        ]));
+        $baseTicket = $this->ticketService->upTopPosition($id);
+        return new TicketResource($baseTicket);
     }
 
     public function mylist(Request $request)
