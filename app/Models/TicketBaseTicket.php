@@ -12,7 +12,6 @@ class TicketBaseTicket extends Model
     protected $table = 'ticket__base_tickets';
     protected $guarded = [];
     public $timestamps = false;
-//    protected $dates = ['created_at', 'expired_at', 'top_position_expired_at'];
     protected $casts = [
         'created_at' => 'datetime',
         'expired_at' => 'datetime',

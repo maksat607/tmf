@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Http\Requests\Ticket\StoreTicket;
-use App\Models\AuthUser;
 use App\Models\TicketAirplaneTicket;
 use App\Models\TicketBaseTicket;
 use Carbon\Carbon;
@@ -11,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class TicketService
 {
+
 
     /**
      *
@@ -21,11 +21,9 @@ class TicketService
      */
     public function store(StoreTicket $request)
     {
-        $user = auth()->user();
-        DB::beginTransaction();
-        try {
+        return $this->transactionWrapper(function () use ($request) {
             $ticketData = [
-                'user_id' => $user->id,
+                'user_id' => auth()->user()->id,
                 'currency_id' => $request->currency,
                 'location_latitude' => $request->locationLatitude,
                 'location_longitude' => $request->locationLongitude,
@@ -52,11 +50,10 @@ class TicketService
                 'return_to_airport_id' => $request->returnToAirport,
                 'airline_id' => $request->airline,
                 'is_one_way' => $request->isOneWay,
-                'start_date_at' => Carbon::parse($request->startDateAt)->format('Y-m-d H:i:s'),
-                'end_date_at' => Carbon::parse($request->endDateAt)->format('Y-m-d H:i:s'),
-                'end_date_at' => Carbon::parse($request->endDateAt)->format('Y-m-d H:i:s'),
-                'return_start_date_at' => Carbon::parse($request->returnStartDateAt)->format('Y-m-d H:i:s'),
-                'return_end_date_at' => Carbon::parse($request->returnEndDateAt)->format('Y-m-d H:i:s'),
+                'start_date_at' => $request->startDateAt ? Carbon::parse($request->startDateAt)->format('Y-m-d H:i:s') : null,
+                'end_date_at' => $request->endDateAt ? Carbon::parse($request->endDateAt)->format('Y-m-d H:i:s') : null,
+                'return_start_date_at' => $request->returnStartDateAt ? Carbon::parse($request->returnStartDateAt)->format('Y-m-d H:i:s') : null,
+                'return_end_date_at' => $request->returnEndDateAt ? Carbon::parse($request->returnEndDateAt)->format('Y-m-d H:i:s') : null,
                 'stops_count' => $request->stopsCount,
                 'return_stops_count' => $request->returnStopsCount,
                 'class_type' => $request->classType,
@@ -69,14 +66,12 @@ class TicketService
             $airplaneTicket = new TicketAirplaneTicket($airplaneTicketData);
             $airplaneTicket->ticketBaseTicket()->associate($baseTicket);
             $airplaneTicket->save();
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-        return $this->fullTicketInfo($baseTicket);
 
+            return $this->fullTicketInfo($baseTicket);
+        });
     }
+
+
 
     public function fullTicketInfo(TicketBaseTicket $ticket): TicketBaseTicket
     {
@@ -94,14 +89,9 @@ class TicketService
 
     public function update(string $id, StoreTicket $request)
     {
-        $user = auth()->user();
-        DB::beginTransaction();
-
-        try {
+        return $this->transactionWrapper(function () use ($id, $request) {
             $baseTicket = TicketBaseTicket::findOrFail($id);
-
-            // Check if the authenticated user is the owner of the ticket
-            if ($user->id !== $baseTicket->user_id) {
+            if (auth()->user()->id !== $baseTicket->user_id) {
                 return response()->json(['error' => 'Forbidden'], 403);
             }
 
@@ -148,28 +138,32 @@ class TicketService
 
             $airplaneTicket->update($airplaneTicketData);
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
-
-        return $this->fullTicketInfo($baseTicket);
+            return $this->fullTicketInfo($baseTicket);
+        });
     }
 
     public function show(string $id)
     {
         $baseTicket = TicketBaseTicket::findOrFail($id);
-        $user = auth()->user();
-//        if ($user->id !== $baseTicket->user_id) {
-//            return response()->json(['error' => 'Unauthorized'], 401);
-//        }
         return $this->fullTicketInfo($baseTicket);
     }
+    public function destroy(string $id)
+    {
+        return $this->transactionWrapper(function () use ($id) {
+            $baseTicket = TicketBaseTicket::findOrFail($id);
+            if (auth()->user()->id !== $baseTicket->user_id) {
+                return response()->json(['error' => 'Forbidden'], 403);
+            }
 
+            $airplaneTicket = $baseTicket->ticketAirplaneTicket;
+            $airplaneTicket->delete();
+            $baseTicket->delete();
+        });
+
+        return response()->noContent();
+    }
     public function upTopPosition(string $id)
     {
-        $user = auth()->user();
         $baseTicket = TicketBaseTicket::findOrFail($id);
 //        if ($user->id !== $baseTicket->user_id) {
 //            return response()->json(['error' => 'Forbidden'], 403);
@@ -179,34 +173,17 @@ class TicketService
         return $this->fullTicketInfo($baseTicket);
     }
 
-    public function destroy(string $id)
+
+    private function transactionWrapper(callable $callback)
     {
-        $user = auth()->user();
         DB::beginTransaction();
         try {
-            $baseTicket = TicketBaseTicket::findOrFail($id);
-            if ($user->id !== $baseTicket->user_id) {
-                return response()->json(['error' => 'Forbidden'], 403);
-            }
-            $airplaneTicket = $baseTicket->ticketAirplaneTicket;
-            $airplaneTicket->delete();
-            $baseTicket->delete();
+            $result = $callback();
             DB::commit();
+            return $result;
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;
         }
-        return response()->noContent();
-    }
-
-    public function getUser(int $id): AuthUser
-    {
-        $user = AuthUser::find($id);
-
-        if (!$user) {
-            throw new \Exception('User not found');
-        }
-
-        return $user;
     }
 }

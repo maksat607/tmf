@@ -5,24 +5,20 @@ namespace App\Http\Controllers\Ticket;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\StoreTicket;
 use App\Http\Resources\Ticket\TicketResource;
-use App\Models\TicketAirplaneTicket;
 use App\Models\TicketBaseTicket;
 use App\Services\TicketFilterService;
 use App\Services\TicketService;
-use Carbon\Carbon;
-use http\Env\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class TicketController extends Controller
 {
 
-    private TicketFilterService $ticketStoreService;
-
-    public function __construct(public TicketFilterService $ticketFilterService)
+    public function __construct(
+        private TicketService       $ticketService,
+        private TicketFilterService $ticketFilterService
+    )
     {
-        $this->middleware('auth.access_token')->only(['store', 'update', 'show','upTopPosition','sold','destroy']);
-        $this->ticketService = new TicketService();
+        $this->middleware('auth.access_token')->only(['store', 'update', 'show', 'upTopPosition', 'sold', 'destroy']);
     }
 
     /**
@@ -31,7 +27,6 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-
         $items = $this->ticketFilterService->getFilteredTickets($request);
         $count = $items->count();
         return response()->json(TicketResource::collection($items))->header('X-Total-Count', $count);
@@ -105,7 +100,7 @@ class TicketController extends Controller
 
     }
 
-    public function sold(Request $request,TicketBaseTicket $ticket)
+    public function sold(Request $request, TicketBaseTicket $ticket)
     {
         $user = auth()->user();
         if ($user->id !== $ticket->user_id) {
@@ -115,7 +110,6 @@ class TicketController extends Controller
         $ticket->save();
         return response()->noContent();
     }
-
 
 
 }
