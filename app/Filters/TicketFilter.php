@@ -139,17 +139,17 @@ class TicketFilter
         }
         if ($this->toStartDateAt) {
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                $query->where('end_date_at', '>=', $this->toStartDateAt);
+                $query->where('start_date_at', '<=', $this->toStartDateAt);
             });
         }
         if ($this->isOnlyWithReturnWay) {
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                $query->whereNotNull('is_one_way');
+                $query->where('is_one_way','1');
             });
         }
         if ($this->isOnlyWithoutReturnWay) {
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                $query->whereNull('is_one_way');
+                $query->where('is_one_way','!=','1');
             });
         }
 
@@ -207,6 +207,5 @@ class TicketFilter
         });
         return $builder;
     }
-
 }
 

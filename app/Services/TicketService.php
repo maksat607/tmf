@@ -2,15 +2,52 @@
 
 namespace App\Services;
 
+use App\Enums\TicketSortType;
+use App\Filters\TicketFilter;
 use App\Http\Requests\Ticket\StoreTicket;
 use App\Models\TicketAirplaneTicket;
 use App\Models\TicketBaseTicket;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class TicketService
 {
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function index(Request $request): array|\Illuminate\Database\Eloquent\Collection
+    {
+        $filter = new TicketFilter();
+        $items = $filter->setOffset($request->get('offset'))
+            ->setLimit($request->get('limit'))
+            ->setFromAirport($request->get('from_airport'))
+            ->setToAirport($request->get('to_airport'))
+            ->setFromStartDateAt(($request->get('fromStartDateAt')))
+            ->setToStartDateAt(($request->get('toStartDateAt')))
+            ->setIsOnlyWithReturnWay($request->get('isOnlyWithReturnWay'))
+            ->setIsOnlyWithoutReturnWay($request->get('isOnlyWithoutReturnWay'))
+            ->setClassType($request->get('classType'))
+            ->setAdultsCount($request->get('adultsCount'))
+            ->setChildrenCount($request->get('childrenCount'))
+            ->setInfantsCount($request->get('infantsCount'))
+//            ->setWatcher($request->user())
+            ->setSortType($request->get('sort_type') ?: TicketSortType::TOP_POSITION)
+            ->apply(TicketBaseTicket::with(['user',
+                'departureAirport',
+                'arrivalAirport',
+                'currency',
+//                'purchases',
+                'ticketAirplaneTicket.fromAirport',
+                'ticketAirplaneTicket.toAirport',
+                'ticketAirplaneTicket.returnFromAirport',
+                'ticketAirplaneTicket.returnToAirport',
+                'ticketAirplaneTicket.airline'
+            ]))
+            ->get();
+        return $items;
+    }
 
     /**
      *
@@ -24,6 +61,7 @@ class TicketService
         return $this->transactionWrapper(function () use ($request) {
             $ticketData = [
                 'user_id' => auth()->user()->id,
+                'created_at' => now(),
                 'currency_id' => $request->currency,
                 'location_latitude' => $request->locationLatitude,
                 'location_longitude' => $request->locationLongitude,
@@ -71,7 +109,18 @@ class TicketService
         });
     }
 
-
+    private function transactionWrapper(callable $callback)
+    {
+        DB::beginTransaction();
+        try {
+            $result = $callback();
+            DB::commit();
+            return $result;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 
     public function fullTicketInfo(TicketBaseTicket $ticket): TicketBaseTicket
     {
@@ -147,6 +196,7 @@ class TicketService
         $baseTicket = TicketBaseTicket::findOrFail($id);
         return $this->fullTicketInfo($baseTicket);
     }
+
     public function destroy(string $id)
     {
         return $this->transactionWrapper(function () use ($id) {
@@ -162,6 +212,7 @@ class TicketService
 
         return response()->noContent();
     }
+
     public function upTopPosition(string $id)
     {
         $baseTicket = TicketBaseTicket::findOrFail($id);
@@ -171,19 +222,5 @@ class TicketService
         $baseTicket->top_position_expired_at = Carbon::now();
         $baseTicket->save();
         return $this->fullTicketInfo($baseTicket);
-    }
-
-
-    private function transactionWrapper(callable $callback)
-    {
-        DB::beginTransaction();
-        try {
-            $result = $callback();
-            DB::commit();
-            return $result;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            throw $e;
-        }
     }
 }

@@ -25,7 +25,7 @@ class TicketResource extends JsonResource
                 return $this->user;
             })),
 
-            "createdAt" => $this->created_at?->toIso8601String(),
+//            "createdAt" => $this->created_at?->toIso8601String(),
             "locationLatitude" => $this->location_latitude,
             "locationLongitude" => $this->location_longitude,
             "locationName" => $this->location_name,
@@ -68,8 +68,6 @@ class TicketResource extends JsonResource
             "purchase" => $this->whenLoaded('purchases', function () {
                 return $this->purchases;
             }),
-
-
         ];
     }
 }

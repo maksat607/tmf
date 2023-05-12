@@ -27,7 +27,7 @@ class TicketController extends Controller
      */
     public function index(Request $request)
     {
-        $items = $this->ticketFilterService->getFilteredTickets($request);
+        $items = $this->ticketService->index($request);
         $count = $items->count();
         return response()->json(TicketResource::collection($items))->header('X-Total-Count', $count);
     }
