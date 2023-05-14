@@ -20,18 +20,22 @@ class TicketResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "created_at" => $this->created_at,
+            "discountType" => $this->discount_type,
+            "topPositionExpiredAt" => $this->top_position_expired_at?->toIso8601String(),
+            "startDateAt" => $this->ticketAirplaneTicket->start_date_at?->toIso8601String(),
             "type" => "airplane",
             "author" => new AuthUserResource($this->whenLoaded('user', function () {
                 return $this->user;
             })),
 
-//            "createdAt" => $this->created_at?->toIso8601String(),
             "locationLatitude" => $this->location_latitude,
             "locationLongitude" => $this->location_longitude,
             "locationName" => $this->location_name,
             "price" => (int)$this->price,
             "previousPrice" => (int)$this->previous_price,
-            "discountType" => $this->discount_type,
+            "priceWithCommission" => (int)($this->price_with_commission),
+
             "currency" => $this->whenLoaded('currency', function () {
                 return new CurrencyResource($this->currency);
             }),
@@ -51,7 +55,7 @@ class TicketResource extends JsonResource
                 return new AirlineResource($this->ticketAirplaneTicket->airline);
             }),
             "isOneWay" => (boolean) $this->ticketAirplaneTicket->is_one_way,
-            "startDateAt" => $this->ticketAirplaneTicket->start_date_at?->toIso8601String(),
+
             "endDateAt" => $this->ticketAirplaneTicket->end_date_at?->toIso8601String(),
             "returnStartDateAt" => $this->ticketAirplaneTicket->return_start_date_at?->toIso8601String(),
             "returnEndDateAt" => $this->ticketAirplaneTicket->return_end_date_at?->toIso8601String(),
@@ -62,7 +66,7 @@ class TicketResource extends JsonResource
             "childrenCount" => $this->ticketAirplaneTicket->children_count,
             "infantsCount" => $this->ticketAirplaneTicket->infants_count,
             "isSold" => (boolean)$this->is_sold,
-            "topPositionExpiredAt" => $this->top_position_expired_at?->toIso8601String(),
+
             "isHighlighted" =>(boolean) $this->is_highlighted,
             "__typename" => "Ticket_AirplaneTicket",
             "purchase" => $this->whenLoaded('purchases', function () {

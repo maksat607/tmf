@@ -37,6 +37,11 @@ return [
             'driver' => 'apc',
         ],
 
+            'settings' => [
+                'driver' => 'file',
+                'path' => storage_path('framework/cache/data'),
+            ],
+
         'array' => [
             'driver' => 'array',
             'serialize' => false,

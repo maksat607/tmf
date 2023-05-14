@@ -3,9 +3,11 @@
 namespace App\Filters;
 
 use App\Enums\TicketSortType;
-use App\Models\DictionaryAirport;
+use App\Services\SettingsService;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class TicketFilter
@@ -27,6 +29,7 @@ class TicketFilter
 
     public function setOffset(int $offset)
     {
+
         $this->offset = $offset;
         return $this;
     }
@@ -37,29 +40,29 @@ class TicketFilter
         return $this;
     }
 
-    public function setFromAirport( $fromAirport )
+    public function setFromAirport($fromAirport)
     {
         $this->fromAirport = $fromAirport;
         return $this;
     }
 
-    public function setToAirport( $toAirport )
+    public function setToAirport($toAirport)
     {
         $this->toAirport = $toAirport;
         return $this;
     }
 
-    public function setFromStartDateAt( $fromStartDateAt )
+    public function setFromStartDateAt($fromStartDateAt)
     {
-        if ($fromStartDateAt){
+        if ($fromStartDateAt) {
             $this->fromStartDateAt = Carbon::parse($fromStartDateAt);
         }
         return $this;
     }
 
-    public function setToStartDateAt( $toStartDateAt )
+    public function setToStartDateAt($toStartDateAt)
     {
-        if ($toStartDateAt){
+        if ($toStartDateAt) {
             $this->toStartDateAt = Carbon::parse($toStartDateAt);
         }
         return $this;
@@ -109,8 +112,8 @@ class TicketFilter
 
     public function setSortType(string $sortType = null)
     {
-        if ($sortType == 'top_position') {
-            $this->sortType = 'top_position_expired_at';
+        if ($sortType === null) {
+            $this->sortType = TicketSortType::TOP_POSITION;
         } else {
             $this->sortType = $sortType;
         }
@@ -144,12 +147,12 @@ class TicketFilter
         }
         if ($this->isOnlyWithReturnWay) {
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                $query->where('is_one_way','1');
+                $query->where('is_one_way', '1');
             });
         }
         if ($this->isOnlyWithoutReturnWay) {
             $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                $query->where('is_one_way','!=','1');
+                $query->where('is_one_way', '!=', '1');
             });
         }
 
@@ -176,36 +179,38 @@ class TicketFilter
                 $query->where('infants_count', $this->infantsCount);
             });
         }
-
-        switch ($this->sortType) {
-            case TicketSortType::PRICE_ASC:
-                $builder->orderBy('price', 'asc');
-                break;
-            case TicketSortType::PRICE_DESC:
-                $builder->orderBy('price', 'desc');
-                break;
-            case TicketSortType::DATE_ASC:
-                $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                    $query->orderBy('start_date_at', 'asc');
-                });
-                break;
-            case TicketSortType::DATE_DESC:
-                $builder->whereHas('ticketAirplaneTicket', function ($query) {
-                    $query->orderBy('start_date_at', 'desc');
-                });
-                break;
-            default:
-                $builder->orderBy('price', 'asc');
-                break;
-        }
-
         if ($this->watcher) {
             $builder->where('watcher_id', $this->watcher->id);
         }
         $builder->whereHas('ticketAirplaneTicket', function ($query) {
-            $query->where('start_date_at','>',now());
+            $query->where('start_date_at', '>', now()->addHours((int)SettingsService::getSetting('time_for_ticket_publication')));
         });
-        return $builder;
+        return $this->applyOrders($builder);
+
+    }
+
+    /**
+     * @param Builder $builder
+     */
+    public function applyOrders(Builder $builder)
+    {
+        $now = now();
+        switch ($this->sortType) {
+            case TicketSortType::DEPARTURE:
+                $query = $builder->join('ticket__airplane_tickets', 'ticket__base_tickets.id', '=', 'ticket__airplane_tickets.id')
+                    ->where('ticket__airplane_tickets.start_date_at', '>', $now)
+                    ->orderByRaw("CASE WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN 0 ELSE 1 END")
+                    ->orderBy('ticket__airplane_tickets.start_date_at')
+                    ->get();
+                break;
+            default:
+                $query = $builder->orderByRaw("CASE WHEN top_position_expired_at > '$now' THEN 0 ELSE 1 END")
+                    ->orderBy('created_at', 'desc')->get();
+                break;
+
+
+        }
+        return $query;
     }
 }
 

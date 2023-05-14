@@ -19,9 +19,26 @@ class TicketService
      */
     public function index(Request $request): array|\Illuminate\Database\Eloquent\Collection
     {
+        $validatedData = $request->validate([
+            'offset' => 'sometimes|integer',
+            'limit' => 'sometimes|integer',
+        ]);
+
         $filter = new TicketFilter();
-        $items = $filter->setOffset($request->get('offset'))
-            ->setLimit($request->get('limit'))
+        $query = TicketBaseTicket::with([
+            'user',
+            'departureAirport',
+            'arrivalAirport',
+            'currency',
+            'ticketAirplaneTicket',
+            'ticketAirplaneTicket.fromAirport',
+            'ticketAirplaneTicket.toAirport',
+            'ticketAirplaneTicket.returnFromAirport',
+            'ticketAirplaneTicket.returnToAirport',
+            'ticketAirplaneTicket.airline'
+        ]);
+        $items = $filter->setOffset($request->get('offset',0))
+            ->setLimit($request->get('limit',200))
             ->setFromAirport($request->get('from_airport'))
             ->setToAirport($request->get('to_airport'))
             ->setFromStartDateAt(($request->get('fromStartDateAt')))
@@ -33,19 +50,9 @@ class TicketService
             ->setChildrenCount($request->get('childrenCount'))
             ->setInfantsCount($request->get('infantsCount'))
 //            ->setWatcher($request->user())
-            ->setSortType($request->get('sort_type') ?: TicketSortType::TOP_POSITION)
-            ->apply(TicketBaseTicket::with(['user',
-                'departureAirport',
-                'arrivalAirport',
-                'currency',
-//                'purchases',
-                'ticketAirplaneTicket.fromAirport',
-                'ticketAirplaneTicket.toAirport',
-                'ticketAirplaneTicket.returnFromAirport',
-                'ticketAirplaneTicket.returnToAirport',
-                'ticketAirplaneTicket.airline'
-            ]))
-            ->get();
+            ->setSortType($request->get('sortType') ?? TicketSortType::TOP_POSITION)
+            ->apply($query);
+
         return $items;
     }
 
@@ -67,6 +74,7 @@ class TicketService
                 'location_longitude' => $request->locationLongitude,
                 'location_name' => $request->locationName,
                 'price' => $request->price,
+                'price_with_commission' => (int)($request->price + $request->price * ((int)SettingsService::getSetting('commission')) / 100),
                 'previous_price' => $request->previousPrice,
                 'discount_type' => $request->discountType,
                 'is_sold' => false,

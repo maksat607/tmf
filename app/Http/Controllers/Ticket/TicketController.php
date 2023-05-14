@@ -1,108 +1,102 @@
 <?php
-
 namespace App\Http\Controllers\Ticket;
-
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Ticket\StoreTicket;
 use App\Http\Resources\Ticket\TicketResource;
 use App\Models\TicketBaseTicket;
-use App\Services\TicketFilterService;
 use App\Services\TicketService;
 use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
+    private $ticketService;
+    private $cachePrefix = 'tickets_';
 
-    public function __construct(
-        private TicketService       $ticketService,
-        private TicketFilterService $ticketFilterService
-    )
+    public function __construct(TicketService $ticketService)
     {
+        $this->ticketService = $ticketService;
         $this->middleware('auth.access_token')->only(['store', 'update', 'show', 'upTopPosition', 'sold', 'destroy']);
     }
 
-    /**
-     *
-     * Display a listing of the resource.
-     */
-    public function index(Request $request)
+    private function generateCacheKey($suffix)
     {
-        $items = $this->ticketService->index($request);
-        $count = $items->count();
-        return response()->json(TicketResource::collection($items))->header('X-Total-Count', $count);
+        return $this->cachePrefix . $suffix;
     }
 
-    /**
-     *
-     *
-     * Store a newly created resource in storage.
-     *
-     *
-     */
+    public function index(Request $request)
+    {
+        $cacheKey = $this->generateCacheKey('index_' . $request->getQueryString());
+        $cacheDuration = 3600; // Cache duration in seconds (1 hour)
+
+        $response = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
+            $items = $this->ticketService->index($request);
+            $count = $items->count();
+            $tickets = TicketResource::collection($items);
+
+            return Response::json($tickets)->header('X-Total-Count', $count);
+        });
+
+        return $response;
+    }
+
     public function store(StoreTicket $request)
     {
         $baseTicket = $this->ticketService->store($request);
+        Cache::forget($this->generateCacheKey('index_*'));
+
         return new TicketResource($baseTicket);
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $baseTicket = $this->ticketService->show($id);
-        return new TicketResource($baseTicket);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(StoreTicket $request, string $id)
     {
         $baseTicket = $this->ticketService->update($id, $request);
+        Cache::forget($this->generateCacheKey('index_*'));
+
         return new TicketResource($baseTicket);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
+        $this->ticketService->destroy($id);
+        Cache::forget($this->generateCacheKey('index_*'));
 
-        return $this->ticketService->destroy($id);
-
+        return response()->noContent();
     }
 
     public function upTopPosition(string $id)
     {
         $baseTicket = $this->ticketService->upTopPosition($id);
+
+        // Invalidate the index cache
+        Cache::forget($this->generateCacheKey('index_*'));
+
         return new TicketResource($baseTicket);
     }
 
     public function mylist(Request $request)
     {
-        $tickets = auth()->user()->tickets()->with(['user',
+        $tickets = auth()->user()->tickets()->with([
+            'user',
             'departureAirport',
             'arrivalAirport',
             'currency',
-//                'purchases',
             'ticketAirplaneTicket.fromAirport',
             'ticketAirplaneTicket.toAirport',
             'ticketAirplaneTicket.returnFromAirport',
             'ticketAirplaneTicket.returnToAirport',
             'ticketAirplaneTicket.airline'
         ])->get();
-        return TicketResource::collection(
-            $tickets
-        );
 
+        return TicketResource::collection($tickets);
     }
 
     public function sold(Request $request, TicketBaseTicket $ticket)
     {
-        $user = auth()->user();
+        $user =
+
+            auth()->user();
         if ($user->id !== $ticket->user_id) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
