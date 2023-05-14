@@ -35,7 +35,7 @@ class TicketController extends Controller
             $count = $items->count();
             $tickets = TicketResource::collection($items);
 
-//            return Response::json($tickets)->header('X-Total-Count', $count);
+            return Response::json($tickets)->header('X-Total-Count', $count);
         });
 
         return $response;
