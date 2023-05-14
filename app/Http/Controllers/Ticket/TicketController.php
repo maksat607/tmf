@@ -30,12 +30,12 @@ class TicketController extends Controller
         $cacheKey = $this->generateCacheKey('index_' . $request->getQueryString());
         $cacheDuration = 3600; // Cache duration in seconds (1 hour)
 
-        $response = Cache::remember($cacheKey, $cacheDuration, function () use ($request, $cacheKey) {
+        $response = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
             $items = $this->ticketService->index($request);
             $count = $items->count();
             $tickets = TicketResource::collection($items);
 
-            return Response::json($tickets)->header('X-Total-Count', $cacheKey);
+//            return Response::json($tickets)->header('X-Total-Count', $count);
         });
 
         return $response;
