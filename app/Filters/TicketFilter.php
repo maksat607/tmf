@@ -199,8 +199,8 @@ class TicketFilter
             case TicketSortType::DEPARTURE:
                 $query = $builder->join('ticket__airplane_tickets', 'ticket__base_tickets.id', '=', 'ticket__airplane_tickets.id')
                     ->where('ticket__airplane_tickets.start_date_at', '>', $now)
-                    ->orderBy('ticket__airplane_tickets.start_date_at')
                     ->orderByRaw("CASE WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN 0 ELSE 1 END")
+                    ->orderBy('ticket__airplane_tickets.start_date_at')
 
                     ->get();
                 break;
