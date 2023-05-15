@@ -88,7 +88,9 @@ class TicketController extends Controller
             'ticketAirplaneTicket.returnFromAirport',
             'ticketAirplaneTicket.returnToAirport',
             'ticketAirplaneTicket.airline'
-        ])->get();
+        ])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return TicketResource::collection($tickets);
     }
