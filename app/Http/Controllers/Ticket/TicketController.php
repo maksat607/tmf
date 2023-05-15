@@ -104,4 +104,16 @@ class TicketController extends Controller
         $ticket->save();
         return response()->noContent();
     }
+
+    public function show(string $id)
+    {
+        $baseTicket = $this->ticketService->show($id);
+
+        // Invalidate the index cache
+//        Cache::forget($this->generateCacheKey('index_*'));
+
+        return new TicketResource($baseTicket);
+
+
+    }
 }
