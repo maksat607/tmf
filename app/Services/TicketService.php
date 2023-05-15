@@ -19,6 +19,7 @@ class TicketService
      */
     public function index(Request $request): array|\Illuminate\Database\Eloquent\Collection
     {
+
         $validatedData = $request->validate([
             'offset' => 'sometimes|integer',
             'limit' => 'sometimes|integer',
