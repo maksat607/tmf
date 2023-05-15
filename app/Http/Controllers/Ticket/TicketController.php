@@ -44,7 +44,7 @@ class TicketController extends Controller
     public function store(StoreTicket $request)
     {
         $baseTicket = $this->ticketService->store($request);
-//        Cache::forget($this->generateCacheKey('index_*'));
+        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
@@ -52,7 +52,7 @@ class TicketController extends Controller
     public function update(StoreTicket $request, string $id)
     {
         $baseTicket = $this->ticketService->update($id, $request);
-//        Cache::forget($this->generateCacheKey('index_*'));
+        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
@@ -70,7 +70,7 @@ class TicketController extends Controller
         $baseTicket = $this->ticketService->upTopPosition($id);
 
         // Invalidate the index cache
-//        Cache::forget($this->generateCacheKey('index_*'));
+        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
