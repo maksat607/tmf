@@ -54,7 +54,6 @@ class TicketController extends Controller
     {
         $baseTicket = $this->ticketService->update($id, $request);
 //        Cache::forget($this->generateCacheKey('index_*'));
-
         return new TicketResource($baseTicket);
     }
 
@@ -97,9 +96,7 @@ class TicketController extends Controller
 
     public function sold(Request $request, TicketBaseTicket $ticket)
     {
-        $user =
-
-            auth()->user();
+        $user = auth()->user();
         if ($user->id !== $ticket->user_id) {
             return response()->json(['error' => 'Forbidden'], 403);
         }
@@ -107,6 +104,4 @@ class TicketController extends Controller
         $ticket->save();
         return response()->noContent();
     }
-
-
 }
