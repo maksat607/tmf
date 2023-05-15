@@ -20,6 +20,7 @@ class TicketResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            'isFavorite' => $this->favorite !== null,
             "created_at" => $this->created_at,
             "discountType" => $this->discount_type,
             "topPositionExpiredAt" => $this->top_position_expired_at?->toIso8601String(),
@@ -54,7 +55,7 @@ class TicketResource extends JsonResource
             "airline" => $this->whenLoaded('ticketAirplaneTicket', function () {
                 return new AirlineResource($this->ticketAirplaneTicket->airline);
             }),
-            "isOneWay" => (boolean) $this->ticketAirplaneTicket->is_one_way,
+            "isOneWay" => (boolean)$this->ticketAirplaneTicket->is_one_way,
 
             "endDateAt" => $this->ticketAirplaneTicket->end_date_at?->toIso8601String(),
             "returnStartDateAt" => $this->ticketAirplaneTicket->return_start_date_at?->toIso8601String(),
@@ -67,7 +68,7 @@ class TicketResource extends JsonResource
             "infantsCount" => $this->ticketAirplaneTicket->infants_count,
             "isSold" => (boolean)$this->is_sold,
 
-            "isHighlighted" =>(boolean) $this->is_highlighted,
+            "isHighlighted" => (boolean)$this->is_highlighted,
             "__typename" => "Ticket_AirplaneTicket",
             "purchase" => $this->whenLoaded('purchases', function () {
                 return $this->purchases;

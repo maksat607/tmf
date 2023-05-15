@@ -30,6 +30,7 @@ class TicketService
             'departureAirport',
             'arrivalAirport',
             'currency',
+            'favorite',
             'ticketAirplaneTicket',
             'ticketAirplaneTicket.fromAirport',
             'ticketAirplaneTicket.toAirport',
