@@ -32,7 +32,7 @@ class FavoriteTicketController extends Controller
             $ticketResource = new TicketResource($ticket);
             $ticketResources->push($ticketResource);
         }
-        return $ticketResources;
+        return $ticketResources->sortBy('ticketAirplaneTicket.start_date_at');
     }
 
     /**

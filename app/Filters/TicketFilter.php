@@ -194,7 +194,8 @@ class TicketFilter
      */
     public function applyOrders(Builder $builder)
     {
-        $now = now();
+
+        $now = now()->startOfDay();
         switch ($this->sortType) {
             case TicketSortType::DEPARTURE:
                 $query = $builder->join('ticket__airplane_tickets', 'ticket__base_tickets.id', '=', 'ticket__airplane_tickets.id')
