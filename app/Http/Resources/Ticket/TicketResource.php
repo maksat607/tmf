@@ -21,7 +21,7 @@ class TicketResource extends JsonResource
         return [
             "id" => $this->id,
             'isFavorite' => $this->favorite !== null,
-            "created_at" => $this->created_at,
+            "created_at" => $this->created_at?->toIso8601String(),
             "discountType" => $this->discount_type,
             "topPositionExpiredAt" => $this->top_position_expired_at?->toIso8601String(),
             "startDateAt" => $this->ticketAirplaneTicket->start_date_at?->toIso8601String(),
