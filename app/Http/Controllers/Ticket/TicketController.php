@@ -27,24 +27,24 @@ class TicketController extends Controller
 
     public function index(Request $request)
     {
-        $cacheKey = $this->generateCacheKey('index_' . $request->getQueryString());
-        $cacheDuration = 3600; // Cache duration in seconds (1 hour)
-
-        $response = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
+//        $cacheKey = $this->generateCacheKey('index_' . $request->getQueryString());
+//        $cacheDuration = 3600; // Cache duration in seconds (1 hour)
+//
+//        $response = Cache::remember($cacheKey, $cacheDuration, function () use ($request) {
             $items = $this->ticketService->index($request);
             $count = $items->count();
             $tickets = TicketResource::collection($items);
 
             return Response::json($tickets)->header('X-Total-Count', $count);
-        });
-
-        return $response;
+//        });
+//
+//        return $response;
     }
 
     public function store(StoreTicket $request)
     {
         $baseTicket = $this->ticketService->store($request);
-        Cache::forget($this->generateCacheKey('index_*'));
+//        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
@@ -52,7 +52,7 @@ class TicketController extends Controller
     public function update(StoreTicket $request, string $id)
     {
         $baseTicket = $this->ticketService->update($id, $request);
-        Cache::forget($this->generateCacheKey('index_*'));
+//        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
@@ -60,7 +60,7 @@ class TicketController extends Controller
     public function destroy(string $id)
     {
         $this->ticketService->destroy($id);
-        Cache::forget($this->generateCacheKey('index_*'));
+//        Cache::forget($this->generateCacheKey('index_*'));
 
         return response()->noContent();
     }
@@ -70,7 +70,7 @@ class TicketController extends Controller
         $baseTicket = $this->ticketService->upTopPosition($id);
 
         // Invalidate the index cache
-        Cache::forget($this->generateCacheKey('index_*'));
+//        Cache::forget($this->generateCacheKey('index_*'));
 
         return new TicketResource($baseTicket);
     }
