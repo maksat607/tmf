@@ -41,8 +41,8 @@ class TicketService
         ]);
         $items = $filter->setOffset($request->get('offset',0))
             ->setLimit($request->get('limit',200))
-            ->setFromAirport($request->get('from_airport'))
-            ->setToAirport($request->get('to_airport'))
+            ->setFromAirport($request->get('fromAirport'))
+            ->setToAirport($request->get('toAirport'))
             ->setFromStartDateAt(($request->get('fromStartDateAt')))
             ->setToStartDateAt(($request->get('toStartDateAt')))
             ->setIsOnlyWithReturnWay($request->get('isOnlyWithReturnWay'))
