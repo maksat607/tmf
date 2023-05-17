@@ -216,8 +216,9 @@ class TicketFilter
                     ->get();
                 break;
             default:
-                $query = $builder->orderByRaw("CASE WHEN top_position_expired_at > '$now' THEN 0 ELSE 1 END")
-//                    ->orderBy('created_at', 'desc')
+                $query = $builder
+//                    ->orderByRaw("CASE WHEN top_position_expired_at > '$now' THEN 0 ELSE 1 END")
+                    ->orderBy('top_position_expired_at', 'desc')
                     ->get();
                 break;
         }
