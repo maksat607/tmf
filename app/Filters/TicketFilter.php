@@ -195,34 +195,31 @@ class TicketFilter
     public function applyOrders(Builder $builder)
     {
 
-        $now = now()->startOfDay();
+        $now = now();
         switch ($this->sortType) {
             case TicketSortType::DEPARTURE:
                 $query = $builder->join('ticket__airplane_tickets', 'ticket__base_tickets.id', '=', 'ticket__airplane_tickets.id')
                     ->where('ticket__airplane_tickets.start_date_at', '>', $now)
                     ->orderByRaw("CASE
-        WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN 0
-        ELSE 1
-    END")
+                        WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN 0
+                        ELSE 1
+                          END")
                     ->orderByRaw("CASE
-        WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN top_position_expired_at
-        ELSE NULL
-    END ASC")
-                    ->orderByRaw("CASE
-        WHEN top_position_expired_at > '$now' THEN top_position_expired_at
-        ELSE NULL
-    END DESC")
+                        WHEN discount_type = 'promo' AND top_position_expired_at > '$now' THEN top_position_expired_at
+                        ELSE NULL
+                         END ASC")
+//                    ->orderByRaw("CASE
+//                        WHEN top_position_expired_at > '$now' THEN top_position_expired_at
+//                        ELSE NULL
+//                         END DESC")
                     ->orderBy('ticket__airplane_tickets.start_date_at', 'ASC')
                     ->get();
-
-
-
                 break;
             default:
                 $query = $builder->orderByRaw("CASE WHEN top_position_expired_at > '$now' THEN 0 ELSE 1 END")
-                    ->orderBy('created_at', 'desc')->get();
+                    ->orderBy('created_at', 'desc')
+                    ->get();
                 break;
-
 
         }
         return $query;
