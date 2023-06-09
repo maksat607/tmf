@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\UserRatingUpdateType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\StoreAuthUser;
 use App\Http\Resources\Auth\AccessTokenResource;
@@ -11,6 +12,7 @@ use App\Models\AuthUser;
 use Carbon\Carbon;
 use Firebase\Auth\Token\Verifier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
 use Kreait\Firebase\JWT\IdTokenVerifier;
 
@@ -138,5 +140,65 @@ class UserController extends Controller
         ];
     }
 
+    public function likeAction(AuthUser $destination)
+    {
+        $author = auth()->user();
+        if ($destination->id === $author->id) {
+            throw new \App\Exceptions\ValidationFieldException();
+        }
+
+        $lastVote = $this->getLastByDestinationAndAuthor($destination, $author);
+        if ($lastVote && $lastVote->created_at > \Carbon\Carbon::now()->subHour()) {
+            throw new \App\Exceptions\ValidationFieldException( 'You already voted less than an hour ago');
+        }
+
+        $this->increase($destination->id, $author->id);
+        $destination->increases_count = $destination->increases_count + 1;
+        $destination->save();
+        return response()->noContent();
+//        $this->sendPush($destination, $author, true);
+    }
+
+    public function decreaseAction(AuthUser $destination){
+        $author = auth()->user();
+        if ($destination->id === $author->id) {
+            throw new \App\Exceptions\ValidationFieldException();
+        }
+
+        $lastVote = $this->getLastByDestinationAndAuthor($destination, $author);
+        if ($lastVote && $lastVote->created_at > \Carbon\Carbon::now()->subHour()) {
+            throw new \App\Exceptions\ValidationFieldException( 'You already voted less than an hour ago');
+        }
+
+        $this->decrease($destination->id, $author->id);
+        $destination->decreases_count = $destination->decreases_count + 1;
+        $destination->save();
+        return response()->noContent();
+    }
+    public function getLastByDestinationAndAuthor(AuthUser $destination, AuthUser $author)
+    {
+        return DB::table('auth__user_rating_updates')
+            ->where('destination_id', $destination->id)
+            ->where('author_id', $author->id)
+            ->orderBy('created_at', 'DESC')
+            ->first();
+    }
+
+    public function increase($destinationId,$authorId){
+        DB::table('auth__user_rating_updates')->insert([
+            'destination_id' => $destinationId,
+            'author_id' => $authorId,
+            'created_at' => now(),
+            'type' => UserRatingUpdateType::INCREASE
+        ]);
+    }
+    public function decrease($destinationId,$authorId){
+        DB::table('auth__user_rating_updates')->insert([
+            'destination_id' => $destinationId,
+            'author_id' => $authorId,
+            'created_at' => now(),
+            'type' => UserRatingUpdateType::DECREASE
+        ]);
+    }
 
 }

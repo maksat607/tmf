@@ -6,13 +6,13 @@ use App\Exceptions\AccessDeniedException;
 use App\Models\AuthAccessToken;
 use App\Models\AuthUser;
 use Carbon\Carbon;
+use Firebase\Auth\Token\Domain\Generator;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Firebase\Auth\Token\Verifier;
-use Firebase\Auth\Token\Domain\Generator;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
-use Kreait\Firebase\JWT\IdTokenVerifier;
 use Kreait\Firebase\JWT\Error\IdTokenVerificationFailed;
+use Kreait\Firebase\JWT\IdTokenVerifier;
 
 class AuthService
 {
@@ -87,4 +87,6 @@ class AuthService
             throw new AuthenticationException('Invalid Firebase token');
         }
     }
+
+
 }

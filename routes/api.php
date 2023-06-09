@@ -19,9 +19,16 @@ Route::group(['middleware' => 'auth.access_token', 'prefix' => 'auth/users'], fu
     Route::get('me', [\App\Http\Controllers\Auth\UserController::class, 'index']);
     Route::put('me', [\App\Http\Controllers\Auth\UserController::class, 'update']);
     Route::get('{user}', [\App\Http\Controllers\Auth\UserController::class, 'show']);
+    Route::post('{destination}/increase', [\App\Http\Controllers\Auth\UserController::class, 'likeAction']);
+    Route::post('{destination}/decrease', [\App\Http\Controllers\Auth\UserController::class, 'decreaseAction']);
 });
 Route::group(['middleware' => 'auth.access_token', 'prefix' => 'auth'], function ($router) {
     Route::delete('logout', [\App\Http\Controllers\Auth\UserController::class, 'destroy']);
+});
+Route::group(['middleware' => 'auth.access_token', 'prefix' => 'dictionaries'], function ($router) {
+    Route::get('airports', [\App\Http\Controllers\DictionaryController::class, 'airports']);
+    Route::get('airlines', [\App\Http\Controllers\DictionaryController::class, 'airlines']);
+    Route::get('currencies', [\App\Http\Controllers\DictionaryController::class, 'currencies']);
 });
 Route::group(['middleware' => 'auth.access_token', 'prefix' => 'tickets'], function ($router) {
     Route::get('favorites', [\App\Http\Controllers\Ticket\FavoriteTicketController::class, 'index']);

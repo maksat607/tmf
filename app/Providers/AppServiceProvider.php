@@ -16,7 +16,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TicketService::class, function ($app) {
             return new TicketService();
         });
-
+        $this->app->singleton('telegram', function ($app) {
+            return new \App\Services\TelegramService();
+        });
     }
 
     /**
