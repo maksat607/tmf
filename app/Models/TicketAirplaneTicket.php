@@ -49,4 +49,9 @@ class TicketAirplaneTicket extends Model
         return $this->belongsTo(TicketBaseTicket::class,'id','id');
     }
 
+    public function passengersCount()
+    {
+        return $this->adults_count + $this->children_count + $this->infants_count;
+    }
+
 }

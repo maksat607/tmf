@@ -65,4 +65,5 @@ class AuthUser extends Model implements AuthenticatableContract
         return $this->hasMany(TicketsMatchAlertRule::class, 'user_id', 'id');
     }
 
+
 }

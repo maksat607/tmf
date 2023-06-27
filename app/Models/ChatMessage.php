@@ -17,6 +17,7 @@ class ChatMessage extends Model
         'created_at' => 'datetime'
     ];
     protected $dateFormat = 'c';
+    public $timestamps = false;
     public function chat()
     {
         return $this->belongsTo(Chat::class);
@@ -25,9 +26,9 @@ class ChatMessage extends Model
     /**
      * Get the sender of this message.
      */
-    public function sender()
+    public function user()
     {
-        return $this->belongsTo(AuthUser::class, 'sender_id');
+        return $this->belongsTo(AuthUser::class, 'user_id');
     }
 
     /**
@@ -35,6 +36,6 @@ class ChatMessage extends Model
      */
     public function files()
     {
-        return $this->hasMany(ChatMessageFile::class);
+        return $this->hasMany(ChatMessageFile::class,'message_id');
     }
 }

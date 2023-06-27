@@ -3,7 +3,12 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+use App\Exceptions\AccessDeniedException;
+use App\Models\AuthUser;
+use App\Models\ChatChat;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Response;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -21,6 +26,11 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->registerPolicies();
+//
+        Gate::define('chat-owner', function ($user, ChatChat $chat) {
+            return ($chat->replyUser->id !== $user->id && $chat->ticketUser->id !== $user->id) ? Response::allow()
+            : Response::noContent();
+        });
     }
 }

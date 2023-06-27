@@ -25,10 +25,25 @@ Route::group(['middleware' => 'auth.access_token', 'prefix' => 'auth/users'], fu
 Route::group(['middleware' => 'auth.access_token', 'prefix' => 'auth'], function ($router) {
     Route::delete('logout', [\App\Http\Controllers\Auth\UserController::class, 'destroy']);
 });
+Route::group(['middleware' => 'auth.access_token', 'prefix' => 'chats'], function ($router) {
+    Route::delete('logout', [\App\Http\Controllers\Auth\UserController::class, 'destroy']);
+});
 Route::group(['middleware' => 'auth.access_token', 'prefix' => 'dictionaries'], function ($router) {
     Route::get('airports', [\App\Http\Controllers\DictionaryController::class, 'airports']);
     Route::get('airlines', [\App\Http\Controllers\DictionaryController::class, 'airlines']);
     Route::get('currencies', [\App\Http\Controllers\DictionaryController::class, 'currencies']);
+});
+Route::group(['middleware' => 'auth.access_token', 'prefix' => 'chats'], function ($router) {
+    Route::get('my', [\App\Http\Controllers\Chat\ChatController::class, 'my']);
+    Route::get('{chat}', [\App\Http\Controllers\Chat\ChatController::class, 'show']);
+    Route::put('{chat}/mark-unread-as-read', [\App\Http\Controllers\Chat\ChatController::class, 'makeRead']);
+    Route::get('ticket/{ticket}', [\App\Http\Controllers\Chat\ChatController::class, 'ticketChats']);
+    Route::get('ticket/{ticket}/reply-user/{replyUser}', [\App\Http\Controllers\Chat\ChatController::class, 'detailsByTicketAndReplyUser']);
+    Route::post('/', [\App\Http\Controllers\Chat\ChatController::class, 'createChat']);
+    Route::get('{chat}/messages', [\App\Http\Controllers\Chat\ChatController::class, 'messages']);
+    Route::post('{chat}/messages', [\App\Http\Controllers\Chat\ChatController::class, 'createChatMessage']);
+
+
 });
 Route::group(['middleware' => 'auth.access_token', 'prefix' => 'tickets'], function ($router) {
     Route::get('favorites', [\App\Http\Controllers\Ticket\FavoriteTicketController::class, 'index']);

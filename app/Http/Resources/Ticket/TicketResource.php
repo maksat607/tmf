@@ -29,7 +29,6 @@ class TicketResource extends JsonResource
             "author" => new AuthUserResource($this->whenLoaded('user', function () {
                 return $this->user;
             })),
-
             "locationLatitude" => $this->location_latitude,
             "locationLongitude" => $this->location_longitude,
             "locationName" => $this->location_name,

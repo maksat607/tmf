@@ -34,6 +34,10 @@ class TicketBaseTicket extends Model
     {
         return $this->hasMany(Purchase::class, 'ticket_id');
     }
+    public function chats()
+    {
+        return $this->hasMany(ChatChat::class, 'ticket_id');
+    }
 
     public function user()
     {
@@ -50,4 +54,6 @@ class TicketBaseTicket extends Model
     public function favorite(){
         return $this->hasOne(TicketsFavoriteTicket::class,'ticket_id','id');
     }
+
+
 }
